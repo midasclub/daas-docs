@@ -1,0 +1,151 @@
+# Bots
+
+## The Bot object
+
+An object representing a Steam Bot. DaaS uses bots to host lobbies. For a
+production environment, in order to ensure you never, or very rarely run out of
+bots, you should have three times as much bots as simultaneous lobbies that you
+expect to host (i.e: if you expect to host up to 10 lobbies at once, you
+should have a minimum of 30 Steam Bots).
+
+> Example object:
+
+```json
+<%= json example_bot %>
+```
+
+Property | Type | Description
+-------- | ---- | -----------
+id | number | The unique identifier of the bot.
+username | string | The username of the Steam account of the bot.
+password | string | The password of the Steam account of the bot. DaaS needs it to authenticate as your bot.
+steamGuardEnabled | boolean | Whether or not the bot has Steam Guard enabled.
+status | [BotStatus](#botstatus) | The current status of the bot.
+disabledUntil | number? | If the bot is disabled, the date until it will remain so, in UNIX Timestamp format. Otherwise, null.
+
+## Get all Bots
+
+```shell
+<%= curl({ :endpoint => "/bots" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json [example_bot] %>
+```
+
+Retrieves all bots.
+
+### HTTP Request
+
+`<%= get "/bots" %>`
+
+## Get a single Bot
+
+```shell
+<%= curl({ :endpoint => "/bots/:id" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json example_bot %>
+```
+
+Retrieves a specific bot
+
+### HTTP Request
+
+`<%= get "/bots/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The ID of the Bot.
+
+## Create a Bot
+
+```shell
+<%= curl({
+	:endpoint => "/bots",
+	:method => "POST",
+	:body => {
+		:username => "mybot",
+		:password => "mypass",
+		:steamGuardCode => "ABC12"
+	}
+}) %>
+```
+
+> <%= http 201 %>
+
+```json
+<%= json({
+	:id => 1,
+	:username => "mybot",
+	:password => "mypass",
+	:steamGuardEnabled => true,
+	:status => "OFFLINE",
+	:disabledUntil => nil
+}) %>
+```
+
+Adds a Steam account to be used as a lobby bot. Requires a valid
+[Steam](http://store.steampowered.com/) account. The account will be verified
+before creating the Bot.
+
+<aside class="notice">
+	<strong>Note:</strong> DaaS supports bots with Steam Guard. In fact, it is
+	highly recommended to enable it in order to imporve their security.
+</aside>
+
+### HTTP Request
+
+`<%= post "/bots" %>`
+
+### Body
+
+Parameter | Type | Description
+--------- | ---- | -----------
+username | string | The username of your bot's Steam account.
+password | string | The password of your bot's Steam account.
+steamGuardCode | string? | If your bot has Steam Guard enabled, first attempt to create the bot with only the username and password. You will receive the `STEAM_GUARD_CODE_MISSING` error, and an email with the Steam Guard code will be sent to your bot's email account. Retrieve it and make the request again, this time passing the `steamGuardCode` parameter.
+
+### Produces errors
+
+Error | Scenario
+----- | --------
+STEAM_INVALID_LOGIN | If your `password` is incorrect.
+STEAM_GUARD_CODE_MISSING | If your bot is protected by Steam Guard and you didn't pass a `steamGuardCode`.
+STEAM_GUARD_CODE_INVALID | If you passed an invalid or expired `steamGuardCode`.
+STEAM_UNKNOWN_ERROR | If Steam returns an unkown error (i.e: their login API is down).
+
+## Update a Bot
+
+Not currently implemented. Delete the bot and create it again instead.
+
+## Delete a Bot
+
+```shell
+<%= curl({
+	:endpoint => "/bots/:id",
+	:method => "DELETE"
+}) %>
+```
+
+> <%= http 204 %>
+
+Deletes a Bot, meaning that DaaS will not use it to host lobbies anymore.
+However, if the bot is currently hosting a lobby, it will not be interrupted.
+
+### HTTP Request
+
+`<%= delete "/bots/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The ID of the Bot.

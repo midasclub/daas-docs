@@ -1,0 +1,28 @@
+# Enums
+
+DaaS uses Enum values throughout the API. However, when serializing an object,
+DaaS will convert the enum integer value to its string value, to make the
+response more visual. In this section you will find all possible values for
+enums.
+
+## ApiAccessLevel
+
+Represents the access level to a specific route that an [Api Key](#api-keys)
+provides.
+
+Value | Description |
+----- | ----------- |
+NONE | The route is not accessible.
+READ | Only the GET methods for the route are accessible.
+WRITE | All HTTP methods are accessible.
+
+## BotStatus
+
+Represents all the possible statuses of a [Bot](#Bots):
+
+Value | Description |
+----- | ----------- |
+OFFLINE | The bot is offline.
+IDLE | The bot is online, but not hosting a lobby.
+IN_LOBBY | The bot is hosting a lobby, but the game hasn't started.
+IN_MATCH | The bot is hosting a lobby and the game has started.

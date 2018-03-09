@@ -54,4 +54,7 @@ set :port, 4567
 
 helpers do
   require './lib/toc_data.rb'
+  require './lib/global.rb'
 end
+
+set :api_url, "https://my-daas-api.com/api/v1"

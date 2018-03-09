@@ -1,0 +1,35 @@
+---
+title: DaaS API Reference
+
+language_tabs:
+  - shell
+
+includes:
+  - apikeys
+  - bots
+  - enums
+
+search: true
+---
+
+# Introduction
+
+This is a work in progress!
+
+# Authentication
+
+```shell
+<%= curl({ :endpoint => "" }) %>
+```
+
+When you first run DaaS against an empty database, it will generate an API
+Key with full privileges. You can access the DaaS API by passing the
+`X-DaaS-Api-Key` HTTP header on each request.
+
+<aside class="warning">
+	<strong>Important!</strong> It is recommended that you generate a new API 
+	Key with less privileges than the first one to use on your system's
+	integration with DaaS. Typically, systems will only need <code>WRITE</code>
+	privileges on <code>lobbies</code> and <code>READ</code> privileges on
+	<code>webhooks</code> (more on that later).
+</aside>

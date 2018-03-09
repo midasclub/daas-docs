@@ -1,0 +1,209 @@
+# Api Keys
+
+## The Api Key object
+
+An object representing an Api Key. Api keys are used to interact with the
+DaaS Api, by sending their plain text value in the `X-DaaS-Api-Key` header.
+Api Keys are hashed before being stored, which means that the only time
+that you will be able to know their value is right after being generated.
+
+Unlike the rest of the entities of the service, Api Keys are identified by
+`fragments`, which correspond to the first five characters of their plain
+text value.
+
+Api Keys have permissions associated with them, which restrict the access
+level to the DaaS API.
+
+<aside class="notice">
+	<strong>Note:</strong> It is recommended that you generate one Api Key per
+	administrator of your DaaS instance, and one per service interacting with
+	it. Always grant only the necessary permissions to them.
+</aside>
+
+> Example object:
+
+```json
+<%= json example_api_key %>
+```
+
+Property | Type | Description
+-------- | ---- | -----------
+label | string | An arbitrary string that may be used to identify the role of the Api Key.
+fragment | string | A string uniquely identifying the Api Key, which corresponds to its first five characters.
+lastUsed | number | The last time the API Key was used, or the time when it was generated in case it hasn't been used yet, in the UNIX Timestamp format.
+permissions | object | An object indicating the access level to the DaaS API that the Api Key grants.
+permissions.apiKeys | [ApiAccessLevel](#apiaccesslevel) | The access level to the /apiKeys route.
+permissions.bots | [ApiAccessLevel](#apiaccesslevel) | The access level to the /bots route.
+permissions.lobbies | [ApiAccessLevel](#apiaccesslevel) | The access level to the /lobbies route.
+permissions.webhooks | [ApiAccessLevel](#apiaccesslevel) | The access level to the /webhooks route.
+
+## Get all Api Keys
+
+```shell
+<%= curl({ :endpoint => "/apiKeys" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json [example_api_key] %>
+```
+
+Retrieves all api keys.
+
+### HTTP Request
+
+`<%= get "/apiKeys" %>`
+
+## Get a single Api Key
+
+```shell
+<%= curl({ :endpoint => "/apiKeys/:fragment" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json example_api_key %>
+```
+
+Retrieves a specific api key
+
+### HTTP Request
+
+`<%= get "/apiKeys/:fragment" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+fragment | The fragment of the Api Key.
+
+## Create an Api Key
+
+```shell
+<%= curl({
+	:endpoint => "/apiKeys",
+	:method => "POST",
+	:body => {
+		:label => "Midas Club integration",
+		:permissions => {
+			:apiKeys => "NONE",
+			:bots => "NONE",
+			:lobbies => "WRITE",
+			:webhooks => "READ",
+		}
+	}
+}) %>
+```
+
+> <%= http 201 %>
+
+```json
+<%= json({
+		:label => "Midas Club integration",
+		:fragment => "d5022",
+		:lastUsed => 1577848920,
+		:permissions => {
+			:apiKeys => "NONE",
+			:bots => "NONE",
+			:lobbies => "WRITE",
+			:webhooks => "READ",
+		},
+		:value => "d502250d498b02c8e445d20e6a3be46588d30ab7312d934501"
+	}) %>
+```
+
+Generates a new Api Key with the specified privileges. The response will
+include the usual parameters for Api Keys, and also a `value` parameter
+containing the generated key in plain text. This is the only time where the
+value will be sent, and you should store it in a safe place.
+
+### HTTP Request
+
+`<%= post "/apiKeys" %>`
+
+### Body
+
+Parameter | Type | Description
+--------- | ---- | -----------
+label | string | The label to give to your Api Key.
+permissions | object | An object indicating the access level to the DaaS API that the Api Key will grant.
+permissions.apiKeys | [ApiAccessLevel](#apiaccesslevel) | The access level to the /apiKeys route.
+permissions.bots | [ApiAccessLevel](#apiaccesslevel) | The access level to the /bots route.
+permissions.lobbies | [ApiAccessLevel](#apiaccesslevel) | The access level to the /lobbies route.
+permissions.webhooks | [ApiAccessLevel](#apiaccesslevel) | The access level to the /webhooks route.
+
+## Update an Api Key
+
+```shell
+<%= curl({
+	:endpoint => "/apiKeys",
+	:method => "POST",
+	:body => {
+		:label => "New name",
+		:permissions => {
+			:bots => "WRITE"
+		}
+	}
+}) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json({
+		:label => "New name",
+		:fragment => "d5022",
+		:lastUsed => 1577848920,
+		:permissions => {
+			:apiKeys => "NONE",
+			:bots => "WRITE",
+			:lobbies => "WRITE",
+			:webhooks => "READ",
+		}
+	}) %>
+```
+
+Updates the label or the permissions of an existing Api Key. Regenenerating
+keys is not yet supported, so in order to modify the value of an existing
+key, revoke it and generate it again with the same label and permissions.
+
+### HTTP Request
+
+`<%= put "/apiKeys" %>`
+
+### Body
+
+Parameter | Type | Description
+--------- | ---- | -----------
+label | string? | The new label to give to your Api Key.
+permissions | object? | An object indicating the new access level to the DaaS API that the Api Key will grant.
+permissions.apiKeys | [ApiAccessLevel](#apiaccesslevel)? | The access level to the /apiKeys route.
+permissions.bots | [ApiAccessLevel](#apiaccesslevel)? | The access level to the /bots route.
+permissions.lobbies | [ApiAccessLevel](#apiaccesslevel)? | The access level to the /lobbies route.
+permissions.webhooks | [ApiAccessLevel](#apiaccesslevel)? | The access level to the /webhooks route.
+
+## Delete an Api Key
+
+```shell
+<%= curl({
+	:endpoint => "/apiKeys/:fragment",
+	:method => "DELETE"
+}) %>
+```
+
+> <%= http 204 %>
+
+Revokes an Api Key. It will no longer grant access to the DaaS API. This action
+is irreversible.
+
+### HTTP Request
+
+`<%= delete "/apiKeys/:fragment" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+fragment | The fragment of the Api Key.
