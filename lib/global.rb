@@ -102,3 +102,97 @@ def example_bot
 		:disabledUntil => 1577848920
 	}
 end
+
+def example_lobby
+	return {
+		:id => 1,
+		:name => "Alliance vs Ninjas in Pyjamas",
+		:password => "e25beafbc2ef05afc1d1",
+		:server => "LUXEMBOURG",
+		:gameMode => "CAPTAINS_MODE",
+		:radiantHasFirstPick => false,
+		:status => "CLOSED",
+		:matchId => "1864620776",
+		:matchResult => "RADIANT_VICTORY",
+		:players => [
+			{
+				:steamId => "76561198001497299",
+				:isRadiant => true,
+				:isReady => true,
+				:isCaptain => true
+			},
+			{
+				:steamId => "76561198001554683",
+				:isRadiant => true,
+				:isReady => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198061761348",
+				:isRadiant => true,
+				:isReady => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198021550341",
+				:isRadiant => true,
+				:isReady => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198036748162",
+				:isRadiant => true,
+				:isReady => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561197978446698",
+				:isRadiant => false,
+				:isReady => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561197972496930",
+				:isRadiant => false,
+				:isReady => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198060583478",
+				:isRadiant => false,
+				:isReady => true,
+				:isCaptain => true
+			},
+			{
+				:steamId => "76561198031551853",
+				:isRadiant => false,
+				:isReady => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198000475053",
+				:isRadiant => false,
+				:isReady => true,
+				:isCaptain => false
+			}
+		]
+	}
+end
+
+def example_player
+	return {
+		:steamId => "76561198001497299",
+		:isRadiant => true,
+		:isReady => true,
+		:isCaptain => true
+	}
+end	
+
+def example_webhook
+	return {
+		:id => 1,
+		:eventType => "GAME_FINISHED",
+		:url => "https://my-super-app.com/api/webhooks/daas/gameFinished",
+		:secret => "fd86a4bab4ec53bc4941ff266199a41ae98e7406"
+	}
+end	

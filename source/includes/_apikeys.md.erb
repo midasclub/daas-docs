@@ -138,7 +138,7 @@ permissions.webhooks | [ApiAccessLevel](#apiaccesslevel) | The access level to t
 
 ```shell
 <%= curl({
-	:endpoint => "/apiKeys",
+	:endpoint => "/apiKeys/:fragment",
 	:method => "POST",
 	:body => {
 		:label => "New name",
@@ -171,7 +171,13 @@ key, revoke it and generate it again with the same label and permissions.
 
 ### HTTP Request
 
-`<%= put "/apiKeys" %>`
+`<%= put "/apiKeys/:fragment" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+fragment | The fragment of the Api Key.
 
 ### Body
 

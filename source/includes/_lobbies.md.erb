@@ -1,0 +1,336 @@
+# Lobbies
+
+## The Lobby object
+
+An object representing a Dota 2 lobby.
+
+> Example object:
+
+```json
+<%= json example_lobby %>
+```
+
+Property | Type | Description
+-------- | ---- | -----------
+id | number | The unique identifier of the lobby.
+name | string | The name of the lobby. It will be used as the lobby name in Dota 2.
+password | string | The password of the lobby in Dota 2. Sharing this with your players isn't recommended as they will be automatically invited. However, since invites don't always work, this is provided to have a secondary access method.
+server | [Server](#server) | The Dota 2 server where the lobby is created.
+gameMode | [GameMode](#gamemode) | The game mode that is played in the lobby.
+radiantHasFirstPick | boolean | If the game mode is `CAPTAINS_MODE`, its value is `true` if the Radiant side has the first pick, and `false` if the Dire side has it. Otherwise, this has no effect.
+status | [LobbyStatus](#lobbystatus) | The status of the lobby.
+matchId | string? | The Dota 2 match ID of the lobby. This value will be present after the game starts, and will be `null` otherwise.
+matchResult | [MatchResult](#matchresult)? | The result of the game (i.e: who won). This value will be present after the game ends, and will be `null` otherwise.
+players | Array<[Player](#the-player-object)> | The players participating in the game.
+
+## The Player object
+
+Represents a Player inside a [Lobby](#the-lobby-object).
+
+```json
+<%= json example_player %>
+```
+
+Property | Type | Description
+-------- | ---- | -----------
+steamId | string | The Steam ID64 of the player.
+isRadiant | boolean | The side of the player, `true` for Radiant, `false` for Dire.
+isReady | boolean | `true` if the player is inside the lobby in Dota 2, and has joined their corresponding slot, `false` otherwise. The game starts when every player inside the lobby is ready. If the lobby is `CREATION_PENDING`, this value will be `false` for everyone.
+isCaptain | boolean | `true` if the player is the captain of the team, `false` otherwise. This currently has no efect, but might in future versions.
+
+## Get all Lobbies
+
+```shell
+<%= curl({ :endpoint => "/lobbies" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json [example_lobby] %>
+```
+
+Retrieves all lobbies.
+
+### HTTP Request
+
+`<%= get "/lobbies" %>`
+
+## Get a single Lobby
+
+```shell
+<%= curl({ :endpoint => "/lobbies/:id" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json example_lobby %>
+```
+
+Retrieves a specific lobby.
+
+### HTTP Request
+
+`<%= get "/lobbies/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The id of the Lobby.
+
+## Create a Lobby
+
+```shell
+<%= curl({
+	:endpoint => "/lobbies",
+	:method => "POST",
+	:body => {
+		:name => "Alliance vs Ninjas in Pyjamas",
+		:server => "LUXEMBOURG",
+		:gameMode => "CAPTAINS_MODE",
+		:radiantHasFirstPick => false,
+		:players => [
+			{
+				:steamId => "76561198001497299",
+				:isRadiant => true,
+				:isCaptain => true
+			},
+			{
+				:steamId => "76561198001554683",
+				:isRadiant => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198061761348",
+				:isRadiant => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198021550341",
+				:isRadiant => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198036748162",
+				:isRadiant => true,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561197978446698",
+				:isRadiant => false,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561197972496930",
+				:isRadiant => false,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198060583478",
+				:isRadiant => false,
+				:isCaptain => true
+			},
+			{
+				:steamId => "76561198031551853",
+				:isRadiant => false,
+				:isCaptain => false
+			},
+			{
+				:steamId => "76561198000475053",
+				:isRadiant => false,
+				:isCaptain => false
+			}
+		]
+	}
+}) %>
+```
+
+> <%= http 201 %>
+
+```json
+<%= json({
+	:id => 1,
+	:name => "Alliance vs Ninjas in Pyjamas",
+	:password => "e25beafbc2ef05afc1d1",
+	:server => "LUXEMBOURG",
+	:gameMode => "CAPTAINS_MODE",
+	:radiantHasFirstPick => false,
+	:status => "CREATION_PENDING",
+	:matchId => nil,
+	:matchResult => nil,
+	:players => [
+		{
+			:steamId => "76561198001497299",
+			:isRadiant => true,
+			:isReady => false,
+			:isCaptain => true
+		},
+		{
+			:steamId => "76561198001554683",
+			:isRadiant => true,
+			:isReady => false,
+			:isCaptain => false
+		},
+		{
+			:steamId => "76561198061761348",
+			:isRadiant => true,
+			:isReady => false,
+			:isCaptain => false
+		},
+		{
+			:steamId => "76561198021550341",
+			:isRadiant => true,
+			:isReady => false,
+			:isCaptain => false
+		},
+		{
+			:steamId => "76561198036748162",
+			:isRadiant => true,
+			:isReady => false,
+			:isCaptain => false
+		},
+		{
+			:steamId => "76561197978446698",
+			:isRadiant => false,
+			:isReady => false,
+			:isCaptain => false
+		},
+		{
+			:steamId => "76561197972496930",
+			:isRadiant => false,
+			:isReady => false,
+			:isCaptain => false
+		},
+		{
+			:steamId => "76561198060583478",
+			:isRadiant => false,
+			:isReady => false,
+			:isCaptain => true
+		},
+		{
+			:steamId => "76561198031551853",
+			:isRadiant => false,
+			:isReady => false,
+			:isCaptain => false
+		},
+		{
+			:steamId => "76561198000475053",
+			:isRadiant => false,
+			:isReady => false,
+			:isCaptain => false
+		}
+	]
+}) %>
+```
+
+Creates a Dota 2 lobby, and invites every player to it. Once all players join
+their corresponding slots, the Bot assigned to the Lobby starts the game. If
+too much time passes without all players joining, the lobby is automatically
+cancelled.
+
+### HTTP Request
+
+`<%= post "/lobbies" %>`
+
+### Body
+
+Property | Type | Description
+-------- | ---- | -----------
+name | string | The name of the lobby. It will be used as the lobby name in Dota 2.
+server | [Server](#server) | The Dota 2 server where the lobby will be created.
+gameMode | [GameMode](#gamemode) | The game mode that will be played in the lobby.
+radiantHasFirstPick | boolean | Who has the first pick in `CAPTAINS_MODE`. If the game mode is not `CAPTAINS_MODE` this value doesn't matter.
+players | Array<[Player](#the-player-object)> | The players that will be invited to participate in the lobby. The `isReady` property is not necessary. There must be exactly five Radiant players, and exactly five Dire players.
+
+## Update a Lobby
+
+```shell
+# Cancelling lobbies
+<%= curl({
+	:endpoint => "/lobbies",
+	:method => "PUT",
+	:body => {
+		:status => "CANCELLED"
+	}
+}) %>
+
+# Overriding match results
+<%= curl({
+	:endpoint => "/lobbies/:id",
+	:method => "PUT",
+	:body => {
+		:matchResult => "DIRE_VICTORY"
+	}
+}) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json example_lobby %>
+```
+
+Cancels an open Lobby, or updates its match result.
+
+Because DaaS lobbies are meant to represent Dota 2 lobbies, most properties
+cannot be updated (i.e: you can't change the game mode after the lobby is
+created). However, DaaS offers some control after a lobby is created; you can
+use this method for:
+
+* Cancelling a lobby before it starts: **NOT YET IMPLEMENTED!**
+* Overriding the match result of the lobby: DaaS might make mistakes sometimes.
+If you know the result better than it, you can override it. If there was a bot
+listening for the result, this will kill it to save resources.
+
+<aside class="warning">
+	<strong>Important!</strong> Cancelling lobbies is not yet implemented and
+	will return <strong>501 NOT IMPLEMENTED</strong>.
+</aside>
+
+### HTTP Request
+
+`<%= put "/lobbies/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The ID of the Lobby.
+
+### Body
+
+Parameter | Type | Description
+--------- | ---- | -----------
+status | [LobbyStatus](#lobbystatus)? | The status of the lobby. The only possible value accepted by this method is `CANCELLED`. In order to cancel the lobby, it must be `OPEN` in the first place.
+matchResult | [MatchResult](#matchresult)? | The result of the game.
+
+## Delete a Lobby
+
+```shell
+<%= curl({
+	:endpoint => "/lobbies/:id",
+	:method => "DELETE"
+}) %>
+```
+
+> <%= http 204 %>
+
+Deletes a Lobby. This doesn't have any effect aside from removing the
+information from the database.
+
+<aside class="warning">
+	<strong>Important!</strong> Deleting an open lobby will not cancel it. This
+	will probably be implemented in future versions.
+</aside>
+
+### HTTP Request
+
+`<%= delete "/lobbies/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The ID of the Lobby.

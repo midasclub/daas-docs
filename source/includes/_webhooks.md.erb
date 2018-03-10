@@ -1,0 +1,186 @@
+# Webhooks
+
+DaaS not only allows your application to interact with Dota 2 in two ways:
+through the API, and using webhooks. You may create webhooks to subscribe to
+potential events that might occur on your created lobbies. See
+[WebHookEventType](#webhookeventtype) to see all supported events.
+
+Whenever an event occurs, DaaS will send an `HTTP POST` request to the your
+webhook's `url` with all the information you need.
+
+DaaS authenticates webhooks through `secrets`. Each webhook has a randomly
+generated secret associated with it, and DaaS will send it to you so you can
+validate it.
+
+<aside class="notice">
+	<strong>Note:</strong> It is recommended to not store the webhook secrets
+	anywhere in your application, not even in the database or the environment
+	variables.<br/><br/>
+
+	Since each webhook has its own secret, and more events might be added over
+	time, maintaining secrets this way can be tedious; the recommended way is
+	to <strong>query the secrets on your application startup, and only store
+	them in memory</strong>.<br><br>
+
+	This also allows you to regenerate webhook secrets without much effort.
+</aside>
+
+## The Webhook object
+
+An object representing a webhook.
+
+> Example object:
+
+```json
+<%= json example_webhook %>
+```
+
+Property | Type | Description
+-------- | ---- | -----------
+id | number | The unique identifier of the webhook.
+eventType | [WebhookEventType](#webhookeventtype) | The type of events that this specific webhook will notify about.
+url | string | The url where the notifications will be sent.
+secret | string | A randomly generated string that DaaS will send in the request to prove its identity
+
+
+## Get all Lobbies
+
+```shell
+<%= curl({ :endpoint => "/webhooks" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json [example_webhook] %>
+```
+
+Retrieves all webhooks.
+
+### HTTP Request
+
+`<%= get "/webhooks" %>`
+
+## Get a single Webhook
+
+```shell
+<%= curl({ :endpoint => "/webhooks/:id" }) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json example_lobby %>
+```
+
+Retrieves a specific webhook.
+
+### HTTP Request
+
+`<%= get "/webhooks/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The id of the Webhook.
+
+## Create a Webhook
+
+```shell
+<%= curl({
+	:endpoint => "/webhooks",
+	:method => "POST",
+	:body => {
+		:eventType => "GAME_FINISHED",
+		:url => "https://my-super-app.com/api/webhooks/daas/gameFinished"
+	}
+}) %>
+```
+
+> <%= http 201 %>
+
+```json
+<%= json example_webhook %>
+```
+
+Creates a Webhook.
+
+### HTTP Request
+
+`<%= post "/webhooks" %>`
+
+### Body
+
+Property | Type | Description
+-------- | ---- | -----------
+eventType | [WebhookEventType](#webhookeventtype) | The type of events that this specific webhook will notify about.
+url | string | The url where the notifications will be sent.
+
+## Update a Webhook
+
+```shell
+<%= curl({
+	:endpoint => "/webhooks/:id",
+	:method => "PUT",
+	:body => {
+		:eventType => "GAME_CANCELLED",
+		:url => "https://my-super-app.com/api/webhooks/daas/gameCancelled",
+		:regenerateSecret => true
+	}
+}) %>
+```
+
+> <%= http 200 %>
+
+```json
+<%= json({
+	:id => 1,
+	:eventType => "GAME_CANCELLED",
+	:url => "https://my-super-app.com/api/webhooks/daas/gameCancelled",
+	:secret => "487e1e98c72bca6984dca3b3c66dba1306f65872"
+}) %>
+```
+
+Updates a Webhook.
+
+### HTTP Request
+
+`<%= put "/webhooks/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The ID of the Webhook.
+
+### Body
+
+Property | Type | Description
+-------- | ---- | -----------
+eventType | [WebhookEventType](#webhookeventtype) | The type of events that this specific webhook will notify about.
+url | string | The url where the notifications will be sent.
+regenerateSecret | boolean? | If true, the Webhook secret will be regenerated.
+
+## Delete a Webhook
+
+```shell
+<%= curl({
+	:endpoint => "/webhooks/:id",
+	:method => "DELETE"
+}) %>
+```
+
+> <%= http 204 %>
+
+Deletes a Webhook.
+
+### HTTP Request
+
+`<%= delete "/webhooks/:id" %>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+id | The ID of the Webhook.

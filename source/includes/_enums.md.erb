@@ -26,3 +26,82 @@ OFFLINE | The bot is offline.
 IDLE | The bot is online, but not hosting a lobby.
 IN_LOBBY | The bot is hosting a lobby, but the game hasn't started.
 IN_MATCH | The bot is hosting a lobby and the game has started.
+
+## GameMode
+
+Represents all the possible game modes of a [Lobby](#Bots):
+
+Value | Description |
+----- | ----------- |
+ABILITY_DRAFT |
+ALL_DRAFT | The new "all pick" system, where players pick in turns, also known as "Ranked All Pick".
+ALL_PICK | The old "all pick" system, where everyone picks at once.
+ALL_RANDOM |
+ALL_RANDOM_DEATHMATCH |
+CAPTAINS_DRAFT |
+CAPTAINS_MODE |
+ONE_VS_ONE_MID | Not yet supported, as the API will not allow to create a lobby with less than 10 players
+RANDOM_DRAFT |
+SINGLE_DRAFT |
+TURBO |
+
+## LobbyStatus
+
+Represents all the possible statuses of a [Lobby](#the-lobby-object):
+
+Value | Description |
+----- | ----------- |
+CREATION_PENDING | The lobby hasn't been created yet.
+OPEN | The lobby is open and waiting for all players to join.
+IN_PROGRESS | The match has started.
+CANCELLED | The match never started because at least one player didn't join in time.
+CLOSED | The match has ended.
+
+## MatchResult
+
+Represents all the match outcomes of a [Lobby](#the-bot-object):
+
+Value | Description |
+----- | ----------- |
+RADIANT_VICTORY | The Radiant side won the match
+DIRE_VICTORY | The Dire side won the match
+UNABLE_TO_DETERMINE | The bot couldn't determine who won the match. The match might not have been scored in Dota 2 for various reasons (poor network conditions, leavers, server crashes...), or the communication between DaaS and the Dota 2 GC could have simply failed.
+
+## Server
+
+Represents all the possible servers of a [Lobby](#Bots):
+
+Value | Description |
+----- | ----------- |
+AUSTRALIA |
+AUSTRIA |
+BRAZIL |
+CHILE |
+DUBAI |
+INDIA |
+JAPAN |
+KOREA |
+LUXEMBOURG |
+PERU |
+PW_TELECOM_GUANGZHOU |
+PW_TELECOM_SHANGHAI |
+PW_TELECOM_ZHEJIANG |
+PW_TELECOMWUHAN |
+PW_UNICOM |
+SINGAPORE |
+SOUTHAFRICA |
+STOCKHOLM |
+US_EAST |
+US_WEST |
+
+## WebHookEventType
+
+Represents all the type of events of which DaaS can notify your application
+via [Webhooks](#webhooks).
+
+Value | Description |
+----- | ----------- |
+PLAYER_READY_STATUS_UPDATE | A Player's `isReady` property has changed.
+GAME_STARTED | An `OPEN` Lobby has started.
+GAME_CANCELLED | An `OPEN` Lobby has been cancelled.
+GAME_FINISHED | An `IN_PROGRESS` Lobby has finished.
