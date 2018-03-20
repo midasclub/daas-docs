@@ -81,7 +81,7 @@ end
 def example_api_key
 	return {
 		:label => "Service administrator",
-		:fragment => "abc12",
+		:fragment => "81524",
 		:lastUsed => 1577848920,
 		:permissions => {
 			:apiKeys => "NONE",

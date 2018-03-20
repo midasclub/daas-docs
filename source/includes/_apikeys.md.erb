@@ -37,10 +37,32 @@ permissions.bots | [ApiAccessLevel](#apiaccesslevel) | The access level to the /
 permissions.lobbies | [ApiAccessLevel](#apiaccesslevel) | The access level to the /lobbies route.
 permissions.webhooks | [ApiAccessLevel](#apiaccesslevel) | The access level to the /webhooks route.
 
+## The Plain Text Api Key object
+
+An object representing an Api Key, in its plain text version. This inherits all
+properties from [ApiKey](#the-api-key-object). All methods in this route return
+[ApiKey](#the-api-key-object)s, except for the [POST](#create-an-api-key)
+method, which is the only one to return a PlainTextApiKey.
+
+> Example object:
+
+```json
+<%= json example_api_key
+	.tap { |it| it[:value] = "815241826c633ae801eaf0b2ed3047f1a03f2d0d370b774b67" } %>
+```
+
+Property | Type | Description
+-------- | ---- | -----------
+value | string | The value of the Api Key, in plain text.
+
 ## Get all Api Keys
 
 ```shell
 <%= curl({ :endpoint => "/apiKeys" }) %>
+```
+
+```javascript
+const keys = await daas.ApiKeys.getAll()
 ```
 
 > <%= http 200 %>
@@ -59,6 +81,10 @@ Retrieves all api keys.
 
 ```shell
 <%= curl({ :endpoint => "/apiKeys/:fragment" }) %>
+```
+
+```javascript
+const key = await daas.ApiKeys.get(fragment)
 ```
 
 > <%= http 200 %>
@@ -97,27 +123,32 @@ fragment | The fragment of the Api Key.
 }) %>
 ```
 
+```javascript
+import { ApiAccessLevel } from "@daas/model"
+
+const key = await daas.ApiKeys.create({
+	label: "Midas Club integration",
+	permissions: {
+		apiKeys: ApiAccessLevel.NONE,
+		bots: ApiAccessLevel.NONE,
+		lobbies: ApiAccessLevel.WRITE,
+		webhooks: ApiAccessLevel.READ
+	}
+})
+```
+
 > <%= http 201 %>
 
 ```json
-<%= json({
-		:label => "Midas Club integration",
-		:fragment => "d5022",
-		:lastUsed => 1577848920,
-		:permissions => {
-			:apiKeys => "NONE",
-			:bots => "NONE",
-			:lobbies => "WRITE",
-			:webhooks => "READ",
-		},
-		:value => "d502250d498b02c8e445d20e6a3be46588d30ab7312d934501"
-	}) %>
+<%= json example_api_key
+	.tap { |it| it[:value] = "815241826c633ae801eaf0b2ed3047f1a03f2d0d370b774b67" } %>
 ```
 
 Generates a new Api Key with the specified privileges. The response will
-include the usual parameters for Api Keys, and also a `value` parameter
-containing the generated key in plain text. This is the only time where the
-value will be sent, and you should store it in a safe place.
+be a [PlainTextApiKey](#the-plain-text-api-key-object), which will include
+a `value` parameter containing the generated key in plain text. This is the
+only time where the value will be sent, and you should store it in a safe
+place.
 
 ### HTTP Request
 
@@ -148,6 +179,24 @@ permissions.webhooks | [ApiAccessLevel](#apiaccesslevel) | The access level to t
 	}
 }) %>
 ```
+
+```javascript
+import { ApiAccessLevel } from "@daas/model"
+
+const updatedKey = await daas.ApiKeys.update(
+	key, // Or key fragment
+	{
+		label: "New name",
+		permissions: {
+			apiKeys: ApiAccessLevel.NONE,
+			bots: ApiAccessLevel.WRITE,
+			lobbies: ApiAccessLevel.WRITE,
+			webhooks: ApiAccessLevel.READ
+		}
+	}
+)
+```
+
 
 > <%= http 200 %>
 
@@ -197,6 +246,14 @@ permissions.webhooks | [ApiAccessLevel](#apiaccesslevel)? | The access level to 
 	:endpoint => "/apiKeys/:fragment",
 	:method => "DELETE"
 }) %>
+```
+
+```javascript
+// With the key object
+await daas.ApiKeys.delete(key)
+
+// With the key fragment
+await daas.ApiKeys.delete(fragment)
 ```
 
 > <%= http 204 %>

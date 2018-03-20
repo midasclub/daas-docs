@@ -44,13 +44,22 @@ isCaptain | boolean | `true` if the player is the captain of the team, `false` o
 <%= curl({ :endpoint => "/lobbies" }) %>
 ```
 
+```javascript
+const lobbies = await daas.Lobbies.getAll()
+```
+
 > <%= http 200 %>
 
 ```json
-<%= json [example_lobby] %>
+<%= json [example_lobby.tap { |it| it.delete(:players) }] %>
 ```
 
 Retrieves all lobbies.
+
+<aside class="warning">
+	<strong>Important!</strong> This method will not return the lobby players!
+	Retrieve a specific lobby to find its players.
+</aside>
 
 ### HTTP Request
 
@@ -60,6 +69,10 @@ Retrieves all lobbies.
 
 ```shell
 <%= curl({ :endpoint => "/lobbies/:id" }) %>
+```
+
+```javascript
+const lobby = await daas.Lobbies.get(id)
 ```
 
 > <%= http 200 %>
@@ -91,62 +104,74 @@ id | The id of the Lobby.
 		:server => "LUXEMBOURG",
 		:gameMode => "CAPTAINS_MODE",
 		:radiantHasFirstPick => false,
-		:players => [
-			{
-				:steamId => "76561198001497299",
-				:isRadiant => true,
-				:isCaptain => true
-			},
-			{
-				:steamId => "76561198001554683",
-				:isRadiant => true,
-				:isCaptain => false
-			},
-			{
-				:steamId => "76561198061761348",
-				:isRadiant => true,
-				:isCaptain => false
-			},
-			{
-				:steamId => "76561198021550341",
-				:isRadiant => true,
-				:isCaptain => false
-			},
-			{
-				:steamId => "76561198036748162",
-				:isRadiant => true,
-				:isCaptain => false
-			},
-			{
-				:steamId => "76561197978446698",
-				:isRadiant => false,
-				:isCaptain => false
-			},
-			{
-				:steamId => "76561197972496930",
-				:isRadiant => false,
-				:isCaptain => false
-			},
-			{
-				:steamId => "76561198060583478",
-				:isRadiant => false,
-				:isCaptain => true
-			},
-			{
-				:steamId => "76561198031551853",
-				:isRadiant => false,
-				:isCaptain => false
-			},
-			{
-				:steamId => "76561198000475053",
-				:isRadiant => false,
-				:isCaptain => false
-			}
-		]
+		:players => example_lobby[:players]
+			.map { |player| player.tap { |it| it.delete(:isReady) } }
 	}
 }) %>
 ```
 
+```javascript
+import { GameMode, Server } from "@daas/model"
+
+const lobby = await daas.Lobbies.create({
+	name: "Alliance vs Ninjas in Pyjamas",
+	server: Server.LUXEMBOURG,
+	gameMode: GameMode.CAPTAINS_MODE,
+	radiantHasFirstPick: false,
+	players: [
+		{
+			steamId: "76561198001497299",
+			isRadiant: true,
+			isCaptain: true
+		},
+		{
+			steamId: "76561198001554683",
+			isRadiant: true,
+			isCaptain: false
+		},
+		{
+			steamId: "76561198061761348",
+			isRadiant: true,
+			isCaptain: false
+		},
+		{
+			steamId: "76561198021550341",
+			isRadiant: true,
+			isCaptain: false
+		},
+		{
+			steamId: "76561198036748162",
+			isRadiant: true,
+			isCaptain: false
+		},
+		{
+			steamId: "76561197978446698",
+			isRadiant: false,
+			isCaptain: false
+		},
+		{
+			steamId: "76561197972496930",
+			isRadiant: false,
+			isCaptain: false
+		},
+		{
+			steamId: "76561198060583478",
+			isRadiant: false,
+			isCaptain: true
+		},
+		{
+			steamId: "76561198031551853",
+			isRadiant: false,
+			isCaptain: false
+		},
+		{
+			steamId: "76561198000475053",
+			isRadiant: false,
+			isCaptain: false
+		}
+	]
+})
+```
 > <%= http 201 %>
 
 ```json
@@ -160,68 +185,7 @@ id | The id of the Lobby.
 	:status => "CREATION_PENDING",
 	:matchId => nil,
 	:matchResult => nil,
-	:players => [
-		{
-			:steamId => "76561198001497299",
-			:isRadiant => true,
-			:isReady => false,
-			:isCaptain => true
-		},
-		{
-			:steamId => "76561198001554683",
-			:isRadiant => true,
-			:isReady => false,
-			:isCaptain => false
-		},
-		{
-			:steamId => "76561198061761348",
-			:isRadiant => true,
-			:isReady => false,
-			:isCaptain => false
-		},
-		{
-			:steamId => "76561198021550341",
-			:isRadiant => true,
-			:isReady => false,
-			:isCaptain => false
-		},
-		{
-			:steamId => "76561198036748162",
-			:isRadiant => true,
-			:isReady => false,
-			:isCaptain => false
-		},
-		{
-			:steamId => "76561197978446698",
-			:isRadiant => false,
-			:isReady => false,
-			:isCaptain => false
-		},
-		{
-			:steamId => "76561197972496930",
-			:isRadiant => false,
-			:isReady => false,
-			:isCaptain => false
-		},
-		{
-			:steamId => "76561198060583478",
-			:isRadiant => false,
-			:isReady => false,
-			:isCaptain => true
-		},
-		{
-			:steamId => "76561198031551853",
-			:isRadiant => false,
-			:isReady => false,
-			:isCaptain => false
-		},
-		{
-			:steamId => "76561198000475053",
-			:isRadiant => false,
-			:isReady => false,
-			:isCaptain => false
-		}
-	]
+	:players => example_lobby[:players]
 }) %>
 ```
 
@@ -264,6 +228,26 @@ players | Array<[Player](#the-player-object)> | The players that will be invited
 		:matchResult => "DIRE_VICTORY"
 	}
 }) %>
+```
+
+```javascript
+import { MatchResult, LobbyStatus } from "@daas/model"
+
+// Cancelling lobbies
+const updatedLobby = await daas.Lobbies.update(
+	lobby, // Or lobby id
+	{
+		status: LobbyStatus.CANCELLED
+	}
+)
+
+// Overriding match results
+const updatedLobby = await daas.Lobbies.update(
+	lobby, // Or lobby id
+	{
+		matchResult: MatchResult.DIRE_VICTORY
+	}
+)
 ```
 
 > <%= http 200 %>
@@ -313,6 +297,14 @@ matchResult | [MatchResult](#matchresult)? | The result of the game.
 	:endpoint => "/lobbies/:id",
 	:method => "DELETE"
 }) %>
+```
+
+```javascript
+// With the lobby object
+await daas.Lobbies.delete(lobby)
+
+// With the lobby id
+await daas.Lobbies.delete(lobbyId)
 ```
 
 > <%= http 204 %>

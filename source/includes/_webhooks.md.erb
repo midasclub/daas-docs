@@ -43,10 +43,14 @@ url | string | The url where the notifications will be sent.
 secret | string | A randomly generated string that DaaS will send in the request to prove its identity
 
 
-## Get all Lobbies
+## Get all Webhooks
 
 ```shell
 <%= curl({ :endpoint => "/webhooks" }) %>
+```
+
+```javascript
+const webhooks = await daas.Webhooks.getAll()
 ```
 
 > <%= http 200 %>
@@ -67,10 +71,14 @@ Retrieves all webhooks.
 <%= curl({ :endpoint => "/webhooks/:id" }) %>
 ```
 
+```javascript
+const webhook = await daas.Webhooks.get(id)
+```
+
 > <%= http 200 %>
 
 ```json
-<%= json example_lobby %>
+<%= json example_webhook %>
 ```
 
 Retrieves a specific webhook.
@@ -96,6 +104,15 @@ id | The id of the Webhook.
 		:url => "https://my-super-app.com/api/webhooks/daas/gameFinished"
 	}
 }) %>
+```
+
+```javascript
+import { WebHookEventType } from "@daas/model"
+
+const webhook = await daas.Webhooks.create({
+	eventType: WebHookEventType.GAME_FINISHED,
+	url: "https://my-super-app.com/api/webhooks/daas/gameFinished"
+})
 ```
 
 > <%= http 201 %>
@@ -131,6 +148,18 @@ url | string | The url where the notifications will be sent.
 }) %>
 ```
 
+```javascript
+import { WebHookEventType } from "@daas/model"
+
+const updatedWebhook = await daas.Webhooks.update(
+	webhook, // Or webhook ID
+	{
+		eventType: WebHookEventType.GAME_CANCELLED,
+		url: "https://my-super-app.com/api/webhooks/daas/gameCancelled"
+	}
+)
+```
+
 > <%= http 200 %>
 
 ```json
@@ -158,8 +187,8 @@ id | The ID of the Webhook.
 
 Property | Type | Description
 -------- | ---- | -----------
-eventType | [WebhookEventType](#webhookeventtype) | The type of events that this specific webhook will notify about.
-url | string | The url where the notifications will be sent.
+eventType | [WebhookEventType](#webhookeventtype)? | The type of events that this specific webhook will notify about.
+url | string ?| The url where the notifications will be sent.
 regenerateSecret | boolean? | If true, the Webhook secret will be regenerated.
 
 ## Delete a Webhook
@@ -169,6 +198,14 @@ regenerateSecret | boolean? | If true, the Webhook secret will be regenerated.
 	:endpoint => "/webhooks/:id",
 	:method => "DELETE"
 }) %>
+```
+
+```javascript
+// With the webhook object
+await daas.Webhooks.delete(webhook)
+
+// With the webhook id
+await daas.Webhooks.delete(webhookId)
 ```
 
 > <%= http 204 %>

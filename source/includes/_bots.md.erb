@@ -29,6 +29,10 @@ disabledUntil | number? | If the bot is disabled, the date until it will remain 
 <%= curl({ :endpoint => "/bots" }) %>
 ```
 
+```javascript
+const bots = await daas.Bots.getAll()
+```
+
 > <%= http 200 %>
 
 ```json
@@ -45,6 +49,10 @@ Retrieves all bots.
 
 ```shell
 <%= curl({ :endpoint => "/bots/:id" }) %>
+```
+
+```javascript
+const bot = await daas.Bots.get(id)
 ```
 
 > <%= http 200 %>
@@ -77,6 +85,14 @@ id | The ID of the Bot.
 		:steamGuardCode => "ABC12"
 	}
 }) %>
+```
+
+```javascript
+const bot = await daas.Bots.create({
+	username: "mybot",
+	password: "mypass",
+	steamGuardCode: "ABC12"
+})
 ```
 
 > <%= http 201 %>
@@ -133,6 +149,14 @@ Not currently implemented. Delete the bot and create it again instead.
 	:endpoint => "/bots/:id",
 	:method => "DELETE"
 }) %>
+```
+
+```javascript
+// With the bot object
+await daas.Bots.delete(bot)
+
+// With the bot id
+await daas.Bots.delete(botId)
 ```
 
 > <%= http 204 %>
